@@ -1,6 +1,6 @@
 module Knock::Authenticable
   def authenticate_for entity_class
-    getter_name = "current_#{entity_class.to_s.underscore}"
+    getter_name = "current_token_#{entity_class.to_s.underscore}"
     define_current_entity_getter(entity_class, getter_name)
     public_send(getter_name)
   end
@@ -12,11 +12,11 @@ module Knock::Authenticable
   end
 
   def method_missing(method, *args)
-    prefix, entity_name = method.to_s.split('_', 2)
-    case prefix
-    when 'authenticate'
+    prefix, token_switch, entity_name = method.to_s.split('_', 3)
+    case [prefix, token_switch].join('_')
+    when 'authenticate_token'
       unauthorized_entity(entity_name) unless authenticate_entity(entity_name)
-    when 'current'
+    when 'current_token'
       authenticate_entity(entity_name)
     else
       super

@@ -1,11 +1,12 @@
 # knock
-[![Gem Version](https://badge.fury.io/rb/knock.svg)](http://badge.fury.io/rb/knock)
-[![Build Status](https://travis-ci.org/nsarno/knock.svg)](https://travis-ci.org/nsarno/knock)
-[![Test Coverage](https://codeclimate.com/github/nsarno/knock/badges/coverage.svg)](https://codeclimate.com/github/nsarno/knock/coverage)
-[![Code Climate](https://codeclimate.com/github/nsarno/knock/badges/gpa.svg)](https://codeclimate.com/github/nsarno/knock)
-[![Dependency Status](https://gemnasium.com/nsarno/knock.svg)](https://gemnasium.com/nsarno/knock)
+Seamless JWT authentication for Rails API modified to work along with other authentication solutions. All calls to authenticate and get current entities are renamed to allow control over which module to use for authentication.
 
-Seamless JWT authentication for Rails API
+Example:
+
+- `authenticate_user` renamed to `authenticate_token_user`
+- `current_user` renamed to   `current_token_user`
+
+This allows you to specify your own `authenticate_user` and `current_user` methods inside `ApplicationController` and authenticate using an appropriate engine, such as Devise.
 
 ## Description
 
@@ -78,12 +79,12 @@ class ApplicationController < ActionController::API
 end
 ```
 
-You can now protect your resources by calling `authenticate_user` as a before_action
+You can now protect your resources by calling `authenticate_token_user` as a before_action
 inside your controllers:
 
 ```ruby
 class SecuredController < ApplicationController
-  before_action :authenticate_user
+  before_action :authenticate_token_user
 
   def index
     # etc...
@@ -93,7 +94,7 @@ class SecuredController < ApplicationController
 end
 ```
 
-You can access the current user in your controller with `current_user`.
+You can access the current user in your controller with `current_token_user`.
 
 If no valid token is passed with the request, Knock will respond with:
 
@@ -103,7 +104,7 @@ head :unauthorized
 
 You can modify this behaviour by overriding `unauthorized_entity` in your controller.
 
-You also have access directly to `current_user` which will try to authenticate or return `nil`:
+You also have access directly to `current_token_user` which will try to authenticate or return `nil`:
 
 ```ruby
 def index
@@ -115,9 +116,9 @@ def index
 end
 ```
 
-_Note: the `authenticate_user` method uses the `current_user` method. Overwriting `current_user` may cause unexpected behaviour._
+_Note: the `authenticate_token_user` method uses the `current_token_user` method. Overwriting `current_token_user` may cause unexpected behaviour._
 
-You can do the exact same thing for any entity. E.g. for `Admin`, use `authenticate_admin` and `current_admin` instead.
+You can do the exact same thing for any entity. E.g. for `Admin`, use `authenticate_token_admin` and `current_token_admin` instead.
 
 If you're using a namespaced model, Knock won't be able to infer it automatically from the method name. Instead you can use `authenticate_for` directly like this:
 

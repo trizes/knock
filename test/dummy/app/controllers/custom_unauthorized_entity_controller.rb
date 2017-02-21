@@ -1,5 +1,5 @@
 class CustomUnauthorizedEntityController < ApplicationController
-  before_action :authenticate_user
+  before_action :authenticate_token_user
 
   def index
     head :ok
